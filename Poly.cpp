@@ -1,89 +1,150 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include <vector>
+#include <map>
 #include <algorithm>
 #include "Poly.h"
 
-Term::Term()
-	: coefficient{0}, power{0} {}
-
-Term::Term(double coefficient)
-	: coefficient{coefficient}, power{0} {}
-
-Term::Term(double coefficient, int power)
-	: coefficient{coefficient}, power{power} {}
-
-void copyTerms(std::vector<Term>  &lhs, const std::vector<Term>  &rhs)
+Poly::Poly()
 {
-	for (int i = 0; i < rhs.size(); i++)
-	{
-		lhs.push_back(Term(rhs[i].coefficient, rhs[i].power));
-	}
+}
+
+Poly::Poly(int x)
+{
+	terms.insert(std::make_pair(0, x));
 }
 
 Poly::Poly(float x)
 {
-	if (x != 0)
-	{
-		terms.push_back(Term(x, 0));
-	}
+	terms.insert(std::make_pair(0, x));
 }
 
-Poly::Poly(std::vector<Term> newTerms)
+Poly::Poly(double x)
 {
-	copyTerms(terms, newTerms);
+	terms.insert(std::make_pair(0, x));
+}
+
+Poly::Poly(std::map<int, float> newTerms)
+{
+	terms = newTerms;
 }
 
 Poly::Poly(const Poly &source)
 {
-	copyTerms(terms, source.terms);
+	terms = source.terms;
 }
 
 Poly operator+(const Poly &lhs, const Poly &rhs)
 {
-	
+	Poly result(lhs.terms);
+	for (auto &kv : rhs.terms)
+	{
+		if (lhs.terms.count(kv.first) != 0)
+		{
+			result.terms[kv.first] += kv.second;
+		}
+		result.terms[kv.first] = kv.second;
+	}
+	return Poly(lhs.terms);
 }
 
 Poly operator-(const Poly &lhs, const Poly &rhs)
 {
-
+	Poly result(lhs.terms);
+	for (auto &kv : rhs.terms)
+	{
+		if (lhs.terms.count(kv.first) != 0)
+		{
+			result.terms[kv.first] -= kv.second;
+		}
+		result.terms[kv.first] = -kv.second;
+	}
+	return Poly(lhs.terms);
 }
 
-Poly operator*(const Poly &lhs, const Poly &rhs)
-{
-
-}
+// Poly operator*(const Poly &lhs, const Poly &rhs)
+// {
+// }
 
 std::ostream &operator<<(std::ostream &out, const Poly &toWrite)
 {
+    const int Precision = 3;
+    out << std::setprecision(Precision);
+    bool isFirst = true;
 
+    for (auto it = toWrite.terms.rbegin(); it != toWrite.terms.rend(); ++it)
+    {
+        const auto &kv = *it;
+
+        if (!isFirst)
+        {
+            if (kv.second > 0)
+                out << " + ";
+            else
+                out << " - ";
+        }
+        
+        if (fabs(kv.second) != 1)
+            out << fabs(kv.second);
+
+        if (kv.first > 0)
+        {
+            if (kv.first == 1)
+                out << "x";
+            else
+                out << "x^" << kv.first;
+        }
+
+        isFirst = false;
+    }
+    return out;
 }
 
 Poly Poly::operator-() const
 {
-	std::vector<Term> newTerms;
+	Poly result = *this;
+	for (auto &kv : result.terms)
+	{
+		result.terms[kv.first] = -result.terms[kv.first];
+	}
+	return result;
 }
 
 Poly &Poly::operator=(const Poly &rhs)
 {
-	copyTerms(terms, rhs.terms);
+	terms = rhs.terms;
 	return *this;
 }
 
 Poly &Poly::operator+=(const Poly &rhs)
 {
-
+	for (auto &kv : rhs.terms)
+	{
+		if (terms.count(kv.first) != 0)
+		{
+			terms[kv.first] += kv.second;
+		}
+		terms[kv.first] = kv.second;
+	}
+	return *this;
 }
 
 Poly &Poly::operator-=(const Poly &rhs)
 {
-
+	for (auto &kv : rhs.terms)
+	{
+		if (terms.count(kv.first) != 0)
+		{
+			terms[kv.first] -= kv.second;
+		}
+		terms[kv.first] = -kv.second;
+	}
+	return *this;
 }
 
-Poly &Poly::operator*=(const Poly &rhs)
-{
-}
+// Poly &Poly::operator*=(const Poly &rhs)
+// {
+// }
 
 bool operator==(const Poly &lhs, const Poly &rhs)
 {
@@ -91,9 +152,9 @@ bool operator==(const Poly &lhs, const Poly &rhs)
 	{
 		return false;
 	}
-	for (int i = 0; i < lhs.terms.size(); i++)
+	for (auto &kv : lhs.terms)
 	{
-		if (lhs.terms[i].power != rhs.terms[i].power || lhs.terms[i].coefficient != rhs.terms[i].coefficient)
+		if (lhs.terms.find(kv.first) != rhs.terms.find(kv.first))
 		{
 			return false;
 		}
@@ -105,11 +166,11 @@ bool operator!=(const Poly &lhs, const Poly &rhs)
 {
 	if (lhs.terms.size() != rhs.terms.size())
 	{
-		return true;
+		return false;
 	}
-	for (int i = 0; i < lhs.terms.size(); i++)
+	for (auto &kv : lhs.terms)
 	{
-		if (lhs.terms[i].power != rhs.terms[i].power || lhs.terms[i].coefficient != rhs.terms[i].coefficient)
+		if (lhs.terms.find(kv.first) != rhs.terms.find(kv.first))
 		{
 			return true;
 		}
@@ -117,62 +178,67 @@ bool operator!=(const Poly &lhs, const Poly &rhs)
 	return false;
 }
 
-double Poly::operator[](int n) const
+float Poly::operator[](int n) const
 {
-	if (terms.size() == 0)
+	auto it = terms.find(n);
+	if (it != terms.end())
 	{
-		return 0;
+		return it->second;
 	}
-
-	return terms[n].coefficient;
+	else
+	{
+		return 0.0; // If the key is not found, return a default value
+	}
 }
 
-Term &Poly::operator[](int n)
+float &Poly::operator[](int n)
 {
-	if (n < 0)
+	if (terms.find(n) != terms.end())
 	{
-		throw std::invalid_argument("Degree must be non-negative");
+		return terms[n];
 	}
-
-	for (int i = 0; i < terms.size(); i++)
+	else
 	{
-		if (terms[i].power == n)
-		{
-			return terms[i];
-		}
+		// If the term doesn't exist, return a pointer to a new term with a value of 0.0.
+		terms[n] = 0.0;
+		return terms[n];
 	}
-	terms.push_back(Term(0));
-	return terms[terms.size() - 1];
 }
+
+// float &Poly::operator[](int n)
+// {
+// 	if (n < 0)
+// 	{
+// 		throw std::invalid_argument("Degree must be non-negative");
+// 	}
+// 	if (terms.find(n) != terms.end())
+// 	{
+// 		return *(terms[n]);
+// 	}
+// 	else
+// 	{
+// 		// If the term doesn't exist, return a pointer to a new term with a value of 0.0.
+// 		terms[n] = 0.0;
+// 		return (terms[n]);
+// 	}
+
+// 	// auto it = terms.find(n);
+// 	// if (it != terms.end())
+// 	// {
+// 	// 	return *(it->second);
+// 	// }
+
+// 	// // Handle the case when the key is not found, by inserting a default pair
+// 	// terms[n] = 0.0;
+// 	// return *terms.find(n);
+// }
 
 double Poly::operator()(double y) const
 {
 	double result = 0;
-	for (int i = 0; i < terms.size(); i++)
+	for (auto &kv : terms)
 	{
-		result += pow(y, terms[i].power) * terms[i].coefficient;
+		result += pow(y, kv.first) * kv.second;
 	}
 	return result;
-}
-
-void Poly::deleteEmpty()
-{
-	for (int i = 0; i < terms.size(); i++)
-	{
-		if (terms[i].coefficient == 0)
-		{
-			terms.erase(terms.begin() + i);
-			i -= 1;
-		}
-	}
-}
-
-bool compareTerms(const Term &term1, const Term &term2)
-{
-	return term1.power > term2.power;
-}
-
-void Poly::sortPoly()
-{
-	std::sort(terms.begin(), terms.end(), compareTerms);
 }
