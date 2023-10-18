@@ -1,53 +1,41 @@
+#pragma once
+
 #include <iostream>
 #include <iomanip>
-#include <vector>
+#include <map>
 #include <cmath>
 
 // ALL ,,x" ARE TO BE NAMED
 
-#pragma once
 
-class Term
-{
-	friend bool compareTerms(const Term& term1, const Term& term2);
-	friend class Poly;
-
-private:
-	
-
-public:
-	// think if its possible for these to be private
-	double coefficient;
-	int power;
-	Term();
-	Term(double coefficient);
-	Term(double coefficient, int power);
-};
+// m.count("key") 1 or 0
+// m.erase("key")
+// m.insert(std::make_pair(a, b))
 
 class Poly
 {
 	friend Poly operator+(const Poly &lhs, const Poly &rhs);
 	friend Poly operator-(const Poly &lhs, const Poly &rhs);
-	friend Poly operator*(const Poly &lhs, const Poly &rhs);
+	// friend Poly operator*(const Poly &lhs, const Poly &rhs);
 	friend std::ostream &operator<<(std::ostream &out, const Poly &toWrite);
 	friend bool operator==(const Poly &lhs, const Poly &rhs);
 	friend bool operator!=(const Poly &lhs, const Poly &rhs);
-	friend void copyTerms(Poly &lhs, const Poly &rhs);
 private:
-	std::vector<Term> terms;
+	std::map<int, float> terms;
 public:
 	Poly();
+	Poly(int x);
 	Poly(float x);
-	Poly(std::vector<Term> newTerms);
+	Poly(double x);
+	Poly(std::map<int, float> newTerms);
 	Poly(const Poly &source);
 	Poly operator-() const;
 	Poly &operator=(const Poly &rhs);
 	Poly &operator+=(const Poly &rhs);
 	Poly &operator-=(const Poly &rhs);
-	Poly &operator*=(const Poly &rhs);
-	double operator[](int n) const;
-    Term& operator[](int n);
+	// Poly &operator*=(const Poly &rhs);
+	float operator[](int n) const;
+    float& operator[](int n);
 	double operator()(double x) const;
-	void sortPoly();
-	void deleteEmpty();
+	std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, float> kv);
 };
