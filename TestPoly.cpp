@@ -24,7 +24,7 @@ int main()
 	p2[1] = 3;
 
 	display(p1, p2);
-	// test(p1, p2);
+	test(p1, p2);
 }
 
 void display(const Poly &p1, const Poly &p2)
@@ -32,20 +32,19 @@ void display(const Poly &p1, const Poly &p2)
 	cout << "Polynomial p1: " << p1 << endl;
 	cout << "Polynomial p2: " << p2 << endl;
 }
-// 505 314 657 - zarząd Grazyna Sobczych 
 
 void test(const Poly &p1, const Poly &p2)
 {
-	// testAddition(p1, p2);
-	// testSubtraction(p1, p2);
-	// testMultiplication(p1, p2);
-	// testNegation(p1, p2);
-	// testValue(p1, p2);
+	testAddition(p1, p2);
+	testSubtraction(p1, p2);
+	testMultiplication(p1, p2);
+	testNegation(p1, p2);
+	testValue(p1, p2);
 }
 
 void testAddition(const Poly &p1, const Poly &p2)
 {
-	Poly p = p1 + p2;
+	Poly p = (p1 + p2);
 	cout << "Sum of polynomials p1 and p2: " << p << endl;
 
 	p = p1 + 3.1;
@@ -63,12 +62,12 @@ void testSubtraction(const Poly &p1, const Poly &p2)
 	cout << "Difference of 7.2 and polynomial p1: " << 7.2 - p1 << endl;
 }
 
-// void testMultiplication(const Poly &p1, const Poly &p2)
-// {
-// 	cout << "Product of polynomials p1 and p2: " << p1 * p2 << endl;
-// 	cout << "2 multiplied by polynomial p1: " << 2 * p1 << endl;
-// 	cout << "Polynomial p1 multiplied by 2: " << p1 * 2 << endl;
-// }
+void testMultiplication(const Poly &p1, const Poly &p2)
+{
+	cout << "Product of polynomials p1 and p2: " << p1 * p2 << endl;
+	cout << "2 multiplied by polynomial p1: " << 2 * p1 << endl;
+	cout << "Polynomial p1 multiplied by 2: " << p1 * 2 << endl;
+}
 
 void testNegation(const Poly &p1, const Poly &p2)
 {
@@ -84,21 +83,3 @@ void testValue(const Poly &p1, const Poly &p2)
 
 
 
-
-
-// std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, float> kv)
-// {
-// 	if (kv.second != 1)
-// 	{
-// 		std::cout << fabs(kv.second);
-// 	}
-// 	if (kv.first == 1)
-// 	{
-// 		std::cout << "x";
-// 	}
-// 	else if (kv.first > 0)
-// 	{
-// 		std::cout << "x^" << kv.first;
-// 	}
-// 	return out;
-// }
