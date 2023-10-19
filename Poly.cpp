@@ -9,16 +9,6 @@ Poly::Poly()
 {
 }
 
-Poly::Poly(int x)
-{
-	terms.insert(std::make_pair(0, x));
-}
-
-Poly::Poly(float x)
-{
-	terms.insert(std::make_pair(0, x));
-}
-
 Poly::Poly(double x)
 {
 	terms.insert(std::make_pair(0, x));
@@ -43,9 +33,12 @@ Poly operator+(const Poly &lhs, const Poly &rhs)
 		{
 			result.terms[kv.first] += kv.second;
 		}
-		result.terms[kv.first] = kv.second;
+		else
+		{
+			result.terms[kv.first] = kv.second;
+		}
 	}
-	return Poly(lhs.terms);
+	return result;
 }
 
 Poly operator-(const Poly &lhs, const Poly &rhs)
@@ -57,47 +50,71 @@ Poly operator-(const Poly &lhs, const Poly &rhs)
 		{
 			result.terms[kv.first] -= kv.second;
 		}
-		result.terms[kv.first] = -kv.second;
+		else
+		{
+			result.terms[kv.first] = -kv.second;
+		}
 	}
-	return Poly(lhs.terms);
+	result.removeZeros();
+	return result;
 }
 
-// Poly operator*(const Poly &lhs, const Poly &rhs)
-// {
-// }
+Poly operator*(const Poly &lhs, const Poly &rhs)
+{
+	Poly result;
+	for (auto &rkv : rhs.terms)
+	{
+		for (auto &lkv : lhs.terms)
+		{
+			result[rkv.first+lkv.first] += rkv.second*lkv.second;
+		}
+	}
+	result.removeZeros();
+	return result;
+}
 
 std::ostream &operator<<(std::ostream &out, const Poly &toWrite)
 {
-    const int Precision = 3;
-    out << std::setprecision(Precision);
-    bool isFirst = true;
+	if (toWrite.terms.size() == 0)
+	{
+		out << 0;
+	}
+	else
+	{
+		const int Precision = 3;
+		out << std::setprecision(Precision);
+		bool isFirst = true;
 
-    for (auto it = toWrite.terms.rbegin(); it != toWrite.terms.rend(); ++it)
-    {
-        const auto &kv = *it;
+		for (auto it = toWrite.terms.rbegin(); it != toWrite.terms.rend(); ++it)
+		{
+			const auto &kv = *it;
 
-        if (!isFirst)
-        {
-            if (kv.second > 0)
-                out << " + ";
-            else
-                out << " - ";
-        }
-        
-        if (fabs(kv.second) != 1)
-            out << fabs(kv.second);
+			if (kv.second > 0)
+			{
+				if (!isFirst)
+				{
+					out << " + ";
+				}
+			}
+			else
+			{
+				out << " - ";
+			}
+			if (fabs(kv.second) != 1)
+				out << fabs(kv.second);
 
-        if (kv.first > 0)
-        {
-            if (kv.first == 1)
-                out << "x";
-            else
-                out << "x^" << kv.first;
-        }
+			if (kv.first > 0)
+			{
+				if (kv.first == 1)
+					out << "x";
+				else
+					out << "x^" << kv.first;
+			}
 
-        isFirst = false;
-    }
-    return out;
+			isFirst = false;
+		}
+	}
+	return out;
 }
 
 Poly Poly::operator-() const
@@ -126,6 +143,7 @@ Poly &Poly::operator+=(const Poly &rhs)
 		}
 		terms[kv.first] = kv.second;
 	}
+	this->removeZeros();
 	return *this;
 }
 
@@ -139,12 +157,9 @@ Poly &Poly::operator-=(const Poly &rhs)
 		}
 		terms[kv.first] = -kv.second;
 	}
+	this->removeZeros();
 	return *this;
 }
-
-// Poly &Poly::operator*=(const Poly &rhs)
-// {
-// }
 
 bool operator==(const Poly &lhs, const Poly &rhs)
 {
@@ -205,34 +220,6 @@ float &Poly::operator[](int n)
 	}
 }
 
-// float &Poly::operator[](int n)
-// {
-// 	if (n < 0)
-// 	{
-// 		throw std::invalid_argument("Degree must be non-negative");
-// 	}
-// 	if (terms.find(n) != terms.end())
-// 	{
-// 		return *(terms[n]);
-// 	}
-// 	else
-// 	{
-// 		// If the term doesn't exist, return a pointer to a new term with a value of 0.0.
-// 		terms[n] = 0.0;
-// 		return (terms[n]);
-// 	}
-
-// 	// auto it = terms.find(n);
-// 	// if (it != terms.end())
-// 	// {
-// 	// 	return *(it->second);
-// 	// }
-
-// 	// // Handle the case when the key is not found, by inserting a default pair
-// 	// terms[n] = 0.0;
-// 	// return *terms.find(n);
-// }
-
 double Poly::operator()(double y) const
 {
 	double result = 0;
@@ -241,4 +228,20 @@ double Poly::operator()(double y) const
 		result += pow(y, kv.first) * kv.second;
 	}
 	return result;
+}
+
+void Poly::removeZeros()
+{
+	std::vector<int> whatToErase;
+	for (auto &kv : terms)
+	{
+		if (terms[kv.first] == 0)
+		{
+			whatToErase.push_back(kv.first);
+		}
+	}
+	for (size_t i = 0; i < whatToErase.size(); i++)
+	{
+		terms.erase(whatToErase[i]);
+	}
 }
