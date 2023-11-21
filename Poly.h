@@ -5,13 +5,6 @@
 #include <map>
 #include <cmath>
 
-// ALL ,,x" ARE TO BE NAMED
-
-
-// m.count("key") 1 or 0
-// m.erase("key")
-// m.insert(std::make_pair(a, b))
-
 class Poly
 {
 	friend Poly operator+(const Poly &lhs, const Poly &rhs);
@@ -31,10 +24,9 @@ public:
 	Poly &operator=(const Poly &rhs);
 	Poly &operator+=(const Poly &rhs);
 	Poly &operator-=(const Poly &rhs);
-	// Poly &operator*=(const Poly &rhs);
-	float operator[](int n) const;
-    float& operator[](int n);
-	double operator()(double x) const;
+	float operator[](int index) const;
+    float& operator[](int index);
+	double operator()(double value) const;
 	std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, float> kv);
 	void removeZeros();
 };
