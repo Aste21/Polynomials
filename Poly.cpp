@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include "Poly.h"
+#include <vector>
 
 Poly::Poly()
 {
@@ -193,9 +194,9 @@ bool operator!=(const Poly &lhs, const Poly &rhs)
 	return false;
 }
 
-float Poly::operator[](int n) const
+float Poly::operator[](int index) const
 {
-	auto it = terms.find(n);
+	auto it = terms.find(index);
 	if (it != terms.end())
 	{
 		return it->second;
@@ -206,26 +207,26 @@ float Poly::operator[](int n) const
 	}
 }
 
-float &Poly::operator[](int n)
+float &Poly::operator[](int index)
 {
-	if (terms.find(n) != terms.end())
+	if (terms.find(index) != terms.end())
 	{
-		return terms[n];
+		return terms[index];
 	}
 	else
 	{
 		// If the term doesn't exist, return a pointer to a new term with a value of 0.0.
-		terms[n] = 0.0;
-		return terms[n];
+		terms[index] = 0.0;
+		return terms[index];
 	}
 }
 
-double Poly::operator()(double y) const
+double Poly::operator()(double value) const
 {
 	double result = 0;
 	for (auto &kv : terms)
 	{
-		result += pow(y, kv.first) * kv.second;
+		result += pow(value, kv.first) * kv.second;
 	}
 	return result;
 }
