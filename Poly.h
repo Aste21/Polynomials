@@ -17,8 +17,9 @@ class Poly
 	friend bool operator!=(const Poly &lhs, const Poly &rhs);
 private:
 	std::map<int, double> terms;
+	void removeZeros();
 public:
-	Poly();
+	Poly() = default;
 	Poly(double x);
 	Poly(std::map<int, double> newTerms);
 	Poly(const Poly &source);
@@ -27,8 +28,6 @@ public:
 	Poly &operator+=(const Poly &rhs);
 	Poly &operator-=(const Poly &rhs);
 	double operator[](int index) const;
-    	double& operator[](int index);
+    double& operator[](int index);
 	double operator()(double value) const;
-	std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, double> kv);
-	void removeZeros();
 };
