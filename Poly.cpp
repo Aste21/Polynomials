@@ -6,16 +6,12 @@
 #include "Poly.h"
 #include <vector>
 
-Poly::Poly()
-{
-}
-
 Poly::Poly(double x)
 {
 	terms.insert(std::make_pair(0, x));
 }
 
-Poly::Poly(std::map<int, float> newTerms)
+Poly::Poly(std::map<int, double> newTerms)
 {
 	terms = newTerms;
 }
@@ -194,7 +190,7 @@ bool operator!=(const Poly &lhs, const Poly &rhs)
 	return false;
 }
 
-float Poly::operator[](int index) const
+double Poly::operator[](int index) const
 {
 	auto it = terms.find(index);
 	if (it != terms.end())
@@ -207,7 +203,7 @@ float Poly::operator[](int index) const
 	}
 }
 
-float &Poly::operator[](int index)
+double &Poly::operator[](int index)
 {
 	if (terms.find(index) != terms.end())
 	{
