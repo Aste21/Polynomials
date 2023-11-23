@@ -29,6 +29,6 @@ public:
 	double operator[](int index) const;
     	double& operator[](int index);
 	double operator()(double value) const;
-	std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, float> kv);
+	std::ostream printTerm(std::ostream &out, const Poly &toWrite, const std::pair<int, double> kv);
 	void removeZeros();
 };
