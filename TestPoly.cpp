@@ -14,7 +14,7 @@ void testValue(const Poly &p1, const Poly &p2);
 int main()
 {
 	Poly p1;   // Declare object representing polynomial p1
-	p1[3] = 2; // Specify coefficients of p1 = 2x^3 + 3.6x + 7
+	p1[3] = 0; // Specify coefficients of p1 = 2x^3 + 3.6x + 7
 	p1[1] = 3.6;
 	p1[0] = 7;
 
